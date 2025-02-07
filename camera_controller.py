@@ -36,7 +36,7 @@ class CameraController:
 
         # Configure the still image settings for the camera
         self.still_config = self.picam2.create_still_configuration(
-            {"size": self.picam2.sensor_resolution}
+            {"size": self.picam2.sensor_resolution}, raw=None
         )
 
         # Apply the preview configuration and start the camera
