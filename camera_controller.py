@@ -36,14 +36,20 @@ class CameraController:
 
         # Configure the still image settings for the camera
         self.still_config = self.picam2.create_still_configuration(
-            {"size": self.picam2.sensor_resolution}, raw=None
+            {"size": self.picam2.sensor_resolution}
         )
 
         # Apply the preview configuration and start the camera
-        self.picam2.configure(self.preview_config)
+        self.picam2.configure(self.still_config)
         self.picam2.start()
         # Allow the camera to warm up
         time.sleep(2)
+
+        # Manueller Weißabgleich: automatischen AWB deaktivieren und manuelle Gains setzen
+        """self.picam2.set_controls({
+            "AwbEnable": False,
+            "ColourGains": (0.7, 0.6)  # Passe diese Werte je nach Bedarf an
+        })"""
 
     def capture_highres_image(self):
         # Capture a high-resolution image and save it to the output directory
@@ -53,16 +59,19 @@ class CameraController:
             day_dir, f"photo_{timestamp}.{self.save_mode}"
         )
         with self.lock:
-            self.picam2.switch_mode_and_capture_file(
-                self.still_config, file_path
-            )
-        print(f"Captured image: {file_path}")
+            self.picam2.capture_file(file_path)
+            if os.path.exists(file_path):
+                print(f"Captured image: {file_path}")
 
     def generate_frames(self):
         # Generate frames for the MJPEG stream
         while self._running:
             with self.lock:
+                self.picam2.switch_mode(self.preview_config)
+                time.sleep(2)
                 frame = self.picam2.capture_array()
+                self.picam2.switch_mode(self.still_config)
+                time.sleep(2)
             _, buffer = cv2.imencode(".jpg", frame)
             yield (
                 b"--frame\r\n"
