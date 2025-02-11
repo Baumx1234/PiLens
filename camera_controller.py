@@ -46,10 +46,10 @@ class CameraController:
         time.sleep(2)
 
         # Manueller Weißabgleich: automatischen AWB deaktivieren und manuelle Gains setzen
-        """self.picam2.set_controls({
+        self.picam2.set_controls({
             "AwbEnable": False,
-            "ColourGains": (0.7, 0.6)  # Passe diese Werte je nach Bedarf an
-        })"""
+            "ColourGains": (1.43, 2.47)  # Passe diese Werte je nach Bedarf an
+        })
 
     def capture_highres_image(self):
         # Capture a high-resolution image and save it to the output directory
@@ -59,7 +59,11 @@ class CameraController:
             day_dir, f"photo_{timestamp}.{self.save_mode}"
         )
         with self.lock:
+            self.picam2.switch_mode(self.still_config)
+            time.sleep(1.5)
             self.picam2.capture_file(file_path)
+            self.picam2.switch_mode(self.preview_config)
+            time.sleep(1.5)
             if os.path.exists(file_path):
                 print(f"Captured image: {file_path}")
 
@@ -67,11 +71,7 @@ class CameraController:
         # Generate frames for the MJPEG stream
         while self._running:
             with self.lock:
-                self.picam2.switch_mode(self.preview_config)
-                time.sleep(2)
                 frame = self.picam2.capture_array()
-                self.picam2.switch_mode(self.still_config)
-                time.sleep(2)
             _, buffer = cv2.imencode(".jpg", frame)
             yield (
                 b"--frame\r\n"
