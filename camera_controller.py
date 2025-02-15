@@ -87,8 +87,12 @@ class CameraController:
             now = datetime.now()
             current_time = now.time()
             # Definiere das Zeitfenster, in dem keine Aufnahmen gemacht werden sollen
-            block_start = dt_time(self.night_intervall_start)
-            block_end = dt_time(self.night_intervall_end)
+            block_start = dt_time(
+                self.night_intervall_start[0], self.night_intervall_start[1]
+            )
+            block_end = dt_time(
+                self.night_intervall_end[0], self.night_intervall_end[1]
+            )
 
             if block_start <= current_time <= block_end:
                 # Berechne, wie viele Sekunden bis 16:00 Uhr verbleiben
