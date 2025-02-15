@@ -35,6 +35,19 @@ def main():
             choices=["jpg", "png"],
             help="Image-Save-Format",
         )
+        parser.add_argument(
+            "--night-intervall-start",
+            type=tuple,
+            default=(10, 0),
+            help="Night intervall Start as Tuple (hour, minute)",
+        )
+        parser.add_argument(
+            "--night-intervall-end",
+            type=tuple,
+            default=(16, 0),
+            help="Night intervall End as Tuple (hour, minute)",
+        )
+
         args = parser.parse_args()
 
         # Initialize the camera controller and MJPEG stream server
@@ -44,6 +57,8 @@ def main():
             video_size=(args.width, args.height),
             still_interval=args.interval,
             save_mode=args.format,
+            night_intervall_start=args.night_intervall_start,
+            night_intervall_end=args.night_intervall_end,
         )
         stream_server = MJpegStreamServer(camera_controller=camera, port=args.port)
 
