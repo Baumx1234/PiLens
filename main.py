@@ -19,16 +19,10 @@ def main():
             default="/home/daniel/growcam/images",
             help="Base output directory",
         )
-        parser.add_argument(
-            "--width", type=int, default=1024, help="Video-Width"
-        )
-        parser.add_argument(
-            "--height", type=int, default=768, help="Video-Height"
-        )
+        parser.add_argument("--width", type=int, default=1024, help="Video-Width")
+        parser.add_argument("--height", type=int, default=768, help="Video-Height")
         parser.add_argument("--fps", type=int, default=30, help="Frame-Rate")
-        parser.add_argument(
-            "--port", type=int, default=5000, help="Stream-Port"
-        )
+        parser.add_argument("--port", type=int, default=5000, help="Stream-Port")
         parser.add_argument(
             "--interval",
             type=int,
@@ -51,14 +45,10 @@ def main():
             still_interval=args.interval,
             save_mode=args.format,
         )
-        stream_server = MJpegStreamServer(
-            camera_controller=camera, port=args.port
-        )
+        stream_server = MJpegStreamServer(camera_controller=camera, port=args.port)
 
         # Start the camera and MJPEG stream server in separate threads
-        flask_thread = threading.Thread(
-            target=stream_server.start, daemon=True
-        )
+        flask_thread = threading.Thread(target=stream_server.start, daemon=True)
         timelapse_thread = threading.Thread(target=camera.start_timelapse_loop)
 
         flask_thread.start()
